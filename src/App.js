@@ -1,11 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 
 const StarTunnelCanvas = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
-  const fpsRef = useRef(0);
-  const lastFrameTimeRef = useRef(0);
-  const [fps, setFps] = useState(0);
 
   const stars = useRef([]);
   const targetScroll = useRef(0);
@@ -83,7 +80,7 @@ const StarTunnelCanvas = () => {
         const alpha = star.baseBrightness * distanceBrightness * Math.min(1.5, scale * 1.2);
 
         // --- Soft small bloom ---
-        const glowSize = size * 1.8;
+        const glowSize = size * 2.2;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
         gradient.addColorStop(0, `rgba(255, 240, 220, ${alpha * 0.2})`);
         gradient.addColorStop(0.4, `rgba(255, 255, 255, ${alpha * 0.1})`);
@@ -101,18 +98,7 @@ const StarTunnelCanvas = () => {
         ctx.fill();
       }
 
-      // --- FPS Counter ---
-      const now = performance.now();
-      const elapsed = now - lastFrameTimeRef.current;
-      fpsRef.current = 1000 / elapsed;
-      lastFrameTimeRef.current = now;
 
-      ctx.fillStyle = "white";
-      ctx.font = "12px monospace";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillText(`FPS: ${Math.round(fpsRef.current)}`, 10, 10);
-      setFps(Math.round(fpsRef.current));
     };
 
     lastTime.current = performance.now();
