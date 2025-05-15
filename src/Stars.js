@@ -1,9 +1,9 @@
-// Stars.js
 import React, { useEffect, useRef } from "react";
 
 const StarTunnelCanvas = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
+  const progressBarRef = useRef(null);
 
   const stars = useRef([]);
   const targetScroll = useRef(0);
@@ -15,6 +15,7 @@ const StarTunnelCanvas = () => {
   const scrollSpeed = 0.5;
   const interpolation = 0.1;
 
+  // Generate golden ratio spiral stars
   useEffect(() => {
     const goldenRatio = Math.PI * (3 - Math.sqrt(5));
     stars.current = Array.from({ length: starCount }, (_, i) => {
@@ -37,6 +38,7 @@ const StarTunnelCanvas = () => {
     });
   }, []);
 
+  // Drawing and animation loop
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -63,9 +65,11 @@ const StarTunnelCanvas = () => {
       const scrollDelta = targetScroll.current - currentScroll.current;
       currentScroll.current += scrollDelta * interpolation * (deltaTime / 16.67);
 
+      // Clear canvas
       ctx.fillStyle = "#000011";
       ctx.fillRect(0, 0, width, height);
 
+      // Draw stars
       for (const star of stars.current) {
         let depth = (star.z + currentScroll.current * star.speed) % maxDepth;
         if (depth < 0) depth += maxDepth;
@@ -103,6 +107,16 @@ const StarTunnelCanvas = () => {
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
         ctx.fill();
       }
+
+      // Update progress bar
+      const maxScrollToShow = -2000; // same as below
+      const progress = Math.min(
+        100,
+        (currentScroll.current / maxScrollToShow) * 100
+      );
+      if (progressBarRef.current) {
+        progressBarRef.current.style.width = `${progress}%`;
+      }
     };
 
     lastTime.current = performance.now();
@@ -113,6 +127,7 @@ const StarTunnelCanvas = () => {
     };
   }, []);
 
+  // Scroll event handling
   useEffect(() => {
     let isDragging = false;
     let lastY = 0;
@@ -121,9 +136,18 @@ const StarTunnelCanvas = () => {
 
     const container = containerRef.current;
 
+    const maxScrollLimit = -2000;
+
     const handleWheel = (e) => {
       e.preventDefault();
-      targetScroll.current += e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
+
+      const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
+
+      if (proposedScroll > 0 || proposedScroll < maxScrollLimit) {
+        return; // Prevent scroll beyond limits
+      }
+
+      targetScroll.current = proposedScroll;
     };
 
     const handleTouchStart = (e) => {
@@ -141,8 +165,14 @@ const StarTunnelCanvas = () => {
       const y = e.touches[0].clientY;
       const delta = lastY - y;
 
+      const proposedScroll = targetScroll.current + delta * scrollSpeed * 1.5;
+
+      if (proposedScroll > 0 || proposedScroll < maxScrollLimit) {
+        return; // Prevent scroll beyond limits
+      }
+
       dragVelocity = delta / (now - lastTouchTime);
-      targetScroll.current += delta * scrollSpeed * 1.5;
+      targetScroll.current = proposedScroll;
 
       lastY = y;
       lastTouchTime = now;
@@ -197,6 +227,22 @@ const StarTunnelCanvas = () => {
       }}
     >
       <canvas ref={canvasRef} style={{ display: "block" }} />
+
+      {/* Scroll Progress Bar */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          height: "4px",
+          width: "0%",
+          maxWidth: "100%",
+          background: "linear-gradient(to right,rgba(0, 219, 0, 0.74),rgba(0, 116, 10, 0.74))",
+          transition: "width 0.1s linear",
+          zIndex: 1000,
+        }}
+        ref={progressBarRef}
+      />
     </div>
   );
 };
