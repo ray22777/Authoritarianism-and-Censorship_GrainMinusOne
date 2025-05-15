@@ -5,6 +5,10 @@ const StarTunnelCanvas = () => {
   const containerRef = useRef(null);
   const progressBarRef = useRef(null);
 
+  // NEW: Refs for left/right exhibition boxes
+  const leftBoxRef = useRef(null);
+  const rightBoxRef = useRef(null);
+
   const stars = useRef([]);
   const targetScroll = useRef(0);
   const currentScroll = useRef(0);
@@ -66,7 +70,7 @@ const StarTunnelCanvas = () => {
       currentScroll.current += scrollDelta * interpolation * (deltaTime / 16.67);
 
       // Clear canvas
-      ctx.fillStyle = "#000011";
+      ctx.fillStyle = "rgb(0, 0, 5) ";
       ctx.fillRect(0, 0, width, height);
 
       // Draw stars
@@ -109,13 +113,52 @@ const StarTunnelCanvas = () => {
       }
 
       // Update progress bar
-      const maxScrollToShow = -2000; // same as below
+      const maxScrollToShow = -2000;
       const progress = Math.min(
         100,
         (currentScroll.current / maxScrollToShow) * 100
       );
       if (progressBarRef.current) {
         progressBarRef.current.style.width = `${progress}%`;
+      }
+
+      // NEW: Exhibition Box Positioning Logic
+      const boxZ = -1000; // Z-position of the boxes
+      const boxXLeft = -0.3; // Relative X coordinate (like stars)
+      const boxXRight = 0.3;
+      const boxY = 0; // Y offset
+
+      const depth = (boxZ + currentScroll.current * 0.05) % maxDepth;
+      const adjustedDepth = depth < 0 ? depth + maxDepth : depth;
+
+      const scale = Math.min(25, 1 / (adjustedDepth * 0.1 + 0.04));
+
+      const isVisible = adjustedDepth >= 0 && adjustedDepth <= maxDepth;
+
+      const boxLeftX = width / 2 + boxXLeft * scale * width * 0.5;
+      const boxRightX = width / 2 + boxXRight * scale * width * 0.5;
+      const boxYPos = height / 2 + boxY * scale * height * 0.5;
+
+      if (leftBoxRef.current) {
+        leftBoxRef.current.style.transform = `
+          translate(-50%, -50%)
+          scale(${scale})
+        `;
+        leftBoxRef.current.style.left = `${boxLeftX}px`;
+        leftBoxRef.current.style.top = `${boxYPos}px`;
+        leftBoxRef.current.style.opacity = isVisible ? 1 : 0;
+        leftBoxRef.current.style.pointerEvents = isVisible ? "auto" : "none";
+      }
+
+      if (rightBoxRef.current) {
+        rightBoxRef.current.style.transform = `
+          translate(-50%, -50%)
+          scale(${scale})
+        `;
+        rightBoxRef.current.style.left = `${boxRightX}px`;
+        rightBoxRef.current.style.top = `${boxYPos}px`;
+        rightBoxRef.current.style.opacity = isVisible ? 1 : 0;
+        rightBoxRef.current.style.pointerEvents = isVisible ? "auto" : "none";
       }
     };
 
@@ -144,7 +187,7 @@ const StarTunnelCanvas = () => {
       const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
 
       if (proposedScroll > 0 || proposedScroll < maxScrollLimit) {
-        return; // Prevent scroll beyond limits
+        return;
       }
 
       targetScroll.current = proposedScroll;
@@ -168,7 +211,7 @@ const StarTunnelCanvas = () => {
       const proposedScroll = targetScroll.current + delta * scrollSpeed * 1.5;
 
       if (proposedScroll > 0 || proposedScroll < maxScrollLimit) {
-        return; // Prevent scroll beyond limits
+        return;
       }
 
       dragVelocity = delta / (now - lastTouchTime);
@@ -243,6 +286,58 @@ const StarTunnelCanvas = () => {
         }}
         ref={progressBarRef}
       />
+
+      {/* Left Exhibition Box */}
+      <div
+        ref={leftBoxRef}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transformOrigin: "center center",
+          width: "200px",
+          padding: "15px",
+          backgroundColor: "rgba(40, 40, 40, 0.9)",
+          color: "white",
+          borderRadius: "10px",
+          pointerEvents: "auto",
+          opacity: 0,
+          fontFamily: "sans-serif",
+          boxShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
+          zIndex: 1001,
+          transition: "opacity 0.2s ease",
+        }}
+        onClick={() => alert("Left box clicked!")}
+      >
+        <h3>Artwork A</h3>
+        <p>This piece floats deep in the cosmos.</p>
+      </div>
+
+      {/* Right Exhibition Box */}
+      <div
+        ref={rightBoxRef}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transformOrigin: "center center",
+          width: "200px",
+          padding: "15px",
+          backgroundColor: "rgba(40, 40, 40, 0.9)",
+          color: "white",
+          borderRadius: "10px",
+          pointerEvents: "auto",
+          opacity: 0,
+          fontFamily: "sans-serif",
+          boxShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
+          zIndex: 1001,
+          transition: "opacity 0.2s ease",
+        }}
+        onClick={() => alert("Right box clicked!")}
+      >
+        <h3>Artwork B</h3>
+        <p>A second exhibit appears on your journey through space.</p>
+      </div>
     </div>
   );
 };
