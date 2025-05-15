@@ -70,7 +70,7 @@ const StarTunnelCanvas = () => {
       currentScroll.current += scrollDelta * interpolation * (deltaTime / 16.67);
 
       // Clear canvas
-      ctx.fillStyle = "rgb(0, 0, 5) ";
+      ctx.fillStyle = "rgb(0, 0, 8) ";
       ctx.fillRect(0, 0, width, height);
 
       // Draw stars
@@ -95,7 +95,7 @@ const StarTunnelCanvas = () => {
 
         const { r, g, b } = star.tint;
 
-        const glowSize = size * 2;
+        const glowSize = size * 2.3;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
         gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha * 0.2})`);
         gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${alpha * 0.1})`);
@@ -309,8 +309,8 @@ const StarTunnelCanvas = () => {
         }}
         onClick={() => alert("Left box clicked!")}
       >
-        <h3>Artwork A</h3>
-        <p>This piece floats deep in the cosmos.</p>
+        <h3>Test</h3>
+        <p>testing texts</p>
       </div>
 
       {/* Right Exhibition Box */}
@@ -335,8 +335,8 @@ const StarTunnelCanvas = () => {
         }}
         onClick={() => alert("Right box clicked!")}
       >
-        <h3>Artwork B</h3>
-        <p>A second exhibit appears on your journey through space.</p>
+        <h3>Test</h3>
+        <p>second text test.</p>
       </div>
     </div>
   );
