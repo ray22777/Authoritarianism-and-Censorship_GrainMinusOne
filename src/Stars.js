@@ -15,23 +15,23 @@ const StarTunnelCanvas = () => {
   const maxDepth = 20;
   const scrollSpeed = 0.5;
   const interpolation = 0.1;
-
+  let previousScroll = 0;
   // Content data
   const leftContents = [
-    { title: "Exhibit A", description: "The dawn of civilization." },
-    { title: "Exhibit B", description: "Renaissance art and science." },
-    { title: "Exhibit C", description: "Modern digital evolution." },
-    { title: "Exhibit D", description: "AI shaping our future." },
-    { title: "Exhibit E", description: "The next frontier." },
+    { title: "Exhibit A", description: "The dawn of civilization.", img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Exhibit B", description: "Renaissance art and science." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Exhibit C", description: "Modern digital evolution." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Exhibit D", description: "AI shaping our future." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Exhibit E", description: "The next frontier.", img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless" },
     { title: "", description: "" },
   ];
   const rightContents = [
-    { title: "Planet X", description: "A mysterious new world." },
-    { title: "Galaxy Cluster", description: "Colliding galaxies in deep space." },
-    { title: "Quantum Realm", description: "Beyond time and space." },
-    { title: "Dark Matter", description: "Unseen but everywhere." },
-    { title: "Black Hole", description: "Where physics breaks down." },
-    { title: "last one", description: "asawdadwdsda" },
+    { title: "Planet X", description: "A mysterious new world." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Galaxy Cluster", description: "Colliding galaxies in deep space." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Quantum Realm", description: "Beyond time and space.", img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless" },
+    { title: "Dark Matter", description: "Unseen but everywhere." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Black Hole", description: "Where physics breaks down." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "last one", description: "asawdadwdsda" , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
   ];
   
   const currentLeftIndex = useRef(0);
@@ -146,16 +146,12 @@ const StarTunnelCanvas = () => {
       const baseDepth = (boxZ + currentScroll.current * 0.05) % maxDepth;
       const leftDepth = baseDepth;
       const rightDepth = (baseDepth + maxDepth * 0.5) % maxDepth; // Offset right box by half the max depth
-
       const adjustedLeftDepth = leftDepth < 0 ? leftDepth + maxDepth : leftDepth;
       const adjustedRightDepth = rightDepth < 0 ? rightDepth + maxDepth : rightDepth;
-
       const leftScale = Math.min(25, 1 / (adjustedLeftDepth * 0.1 + 0.04));
       const rightScale = Math.min(25, 1 / (adjustedRightDepth * 0.1 + 0.04));
-
       const isLeftVisible = adjustedLeftDepth >= 0 && adjustedLeftDepth <= maxDepth;
       const isRightVisible = adjustedRightDepth >= 0 && adjustedRightDepth <= maxDepth;
-
       const boxLeftX = width / 2 + boxXLeft * leftScale * width * 0.5;
       const boxRightX = width / 2 + boxXRight * rightScale * width * 0.5;
       const boxLeftYPos = height / 2 + boxY * leftScale * height * 0.5;
@@ -165,21 +161,22 @@ const StarTunnelCanvas = () => {
       const sectionLength = maxDepth * 20;
       const sectionIndex = Math.floor(-currentScroll.current / sectionLength) % leftContents.length;
       const clampedSectionIndex = Math.max(0, Math.min(sectionIndex, leftContents.length - 1));
-
-      // Check if left box is wrapping around (going from back to front)
-      console.log(currentScroll.current ) 
-      const content = leftContents[Math.floor(-(currentScroll.current + 400)/400) + 1];
-          leftBoxRef.current.innerHTML = `
-            <h3>${content.title}</h3>
-            <p>${content.description}</p>
-          `;
-
-
-      const contentRight = rightContents[Math.floor(-(currentScroll.current + 200)/400) + 1];
-          rightBoxRef.current.innerHTML = `
-            <h3>${contentRight.title}</h3>
-            <p>${contentRight.description}</p>
-          `;
+      if(previousScroll + 20 < -currentScroll.current){
+        const contentLeft = leftContents[Math.floor(-(currentScroll.current + 400)/400) + 1];
+            leftBoxRef.current.innerHTML = `
+                <img alt="Icon" src=${contentLeft.img} style="display: block; margin: 0px auto 10px; border-radius: 8px; max-width: 100%;">
+                <h3>${contentLeft.title}</h3>
+                <p>${contentLeft.description}</p>
+            `;
+        const contentRight = rightContents[Math.floor(-(currentScroll.current + 200)/400) + 1];
+            rightBoxRef.current.innerHTML = `
+                <img alt="Icon" src=${contentRight.img} style="display: block; margin: 0px auto 10px; border-radius: 8px; max-width: 100%;">
+                <h3>${contentRight.title}</h3>
+                <p>${contentRight.description}</p>
+            `;
+        previousScroll = -currentScroll.current;
+      }
+ 
 
       // Update styles
       if (leftBoxRef.current) {
@@ -219,6 +216,7 @@ const StarTunnelCanvas = () => {
 
     const handleWheel = (e) => {
       e.preventDefault();
+
       const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
       if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
       targetScroll.current = proposedScroll;
@@ -322,12 +320,22 @@ const StarTunnelCanvas = () => {
           pointerEvents: "auto",
           opacity: 0,
           fontFamily: "sans-serif",
-          boxShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
+          boxShadow: "0 0 10px rgb(216, 176, 0)",
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
         onClick={() => alert(`Left box: ${leftContents[currentLeftIndex.current]?.title}`)}
       >
+      <img
+        src={leftContents[0].img}
+        alt="Icon"
+        style={{
+          display: "block",
+          margin: "0 auto 10px",
+          borderRadius: "8px",
+          maxWidth: "100%",
+        }}
+      />
         <h3>{leftContents[0].title}</h3>
         <p>{leftContents[0].description}</p>
       </div>
@@ -347,15 +355,27 @@ const StarTunnelCanvas = () => {
           pointerEvents: "auto",
           opacity: 0,
           fontFamily: "sans-serif",
-          boxShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
+          boxShadow: "0 0 10px rgb(216, 176, 0)",
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
         onClick={() => alert(`Right box: ${rightContents[currentRightIndex.current]?.title}`)}
+        
       >
+      <img
+        src={rightContents[0].img}
+        alt="Icon"
+        style={{
+          display: "block",
+          margin: "0 auto 10px",
+          borderRadius: "8px",
+          maxWidth: "100%",
+        }}
+      />
         <h3>{rightContents[0].title}</h3>
         <p>{rightContents[0].description}</p>
       </div>
+
     </div>
   );
 };
