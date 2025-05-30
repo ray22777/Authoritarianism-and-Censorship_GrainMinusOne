@@ -5,7 +5,7 @@ export const leftContents = [
     { title: "Exhibit C", description: "Modern digital evolution." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
     { title: "Exhibit D", description: "AI shaping our future." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
     { title: "Exhibit E", description: "The next frontier.", img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless" },
-    { title: "", description: "" },
+    { title: "Exhibit E", description: "The next frontier.", img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless" }, //ignore this
 ];
 export const rightContents = [
     { title: "Planet X", description: "A mysterious new world." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
