@@ -9,6 +9,9 @@ const StarTunnelCanvas = () => {
   const leftBoxRef = useRef(null);
   const rightBoxRef = useRef(null);
 
+  // NEW: Refs for dynamic text boxes
+  const textBoxRefs = useRef([]);
+
   const stars = useRef([]);
   const targetScroll = useRef(0);
   const currentScroll = useRef(0);
@@ -18,6 +21,20 @@ const StarTunnelCanvas = () => {
   const maxDepth = 20;
   const scrollSpeed = 0.5;
   const interpolation = 0.1;
+
+  // Texts to display at different scroll positions
+  const texts = [
+    { percent: 10, title: "Start", content: "Begin your journey through the stars." },
+    { percent: 20, title: "Formation", content: "Stars are born from clouds of gas." },
+    { percent: 30, title: "Galaxies", content: "We live in the Milky Way galaxy." },
+    { percent: 40, title: "Black Holes", content: "They're mysterious and powerful." },
+    { percent: 50, title: "Dark Matter", content: "It makes up most of the universe." },
+    { percent: 60, title: "Supernovae", content: "Stellar explosions seeding the cosmos." },
+    { percent: 70, title: "Exoplanets", content: "Planets beyond our solar system." },
+    { percent: 80, title: "Nebulas", content: "Giant clouds where stars are born." },
+    { percent: 90, title: "Time Travel", content: "Theoretical but fascinating." },
+    { percent: 100, title: "End", content: "Thanks for exploring!" },
+  ];
 
   // Generate golden ratio spiral stars
   useEffect(() => {
@@ -40,13 +57,18 @@ const StarTunnelCanvas = () => {
         }
       };
     });
+
+    // Initialize refs for each text box
+    textBoxRefs.current = texts.map(() => ({
+      ref: React.createRef(),
+      visible: false,
+    }));
   }, []);
 
   // Drawing and animation loop
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-
     let width = window.innerWidth;
     let height = window.innerHeight;
 
@@ -62,7 +84,6 @@ const StarTunnelCanvas = () => {
 
     const draw = (time) => {
       requestAnimationFrame(draw);
-
       const deltaTime = time - lastTime.current;
       lastTime.current = time;
 
@@ -70,14 +91,13 @@ const StarTunnelCanvas = () => {
       currentScroll.current += scrollDelta * interpolation * (deltaTime / 16.67);
 
       // Clear canvas
-      ctx.fillStyle = "rgb(0, 0, 8) ";
+      ctx.fillStyle = "rgb(0, 0, 8)";
       ctx.fillRect(0, 0, width, height);
 
       // Draw stars
       for (const star of stars.current) {
         let depth = (star.z + currentScroll.current * star.speed) % maxDepth;
         if (depth < 0) depth += maxDepth;
-
         const scale = Math.min(25, 1 / (depth * 0.1 + 0.04));
         const size = star.size * scale;
         if (size < 0.6) continue;
@@ -92,7 +112,6 @@ const StarTunnelCanvas = () => {
             : 1;
 
         const alpha = star.baseBrightness * distanceBrightness * Math.min(1.5, scale * 1.2);
-
         const { r, g, b } = star.tint;
 
         const glowSize = size * 2.3;
@@ -122,17 +141,15 @@ const StarTunnelCanvas = () => {
         progressBarRef.current.style.width = `${progress}%`;
       }
 
-      // NEW: Exhibition Box Positioning Logic
+      // Exhibition Box Positioning Logic
       const boxZ = -1000; // Z-position of the boxes
-      const boxXLeft = -0.3; // Relative X coordinate (like stars)
+      const boxXLeft = -0.3;
       const boxXRight = 0.3;
-      const boxY = 0; // Y offset
+      const boxY = 0;
 
       const depth = (boxZ + currentScroll.current * 0.05) % maxDepth;
       const adjustedDepth = depth < 0 ? depth + maxDepth : depth;
-
       const scale = Math.min(25, 1 / (adjustedDepth * 0.1 + 0.04));
-
       const isVisible = adjustedDepth >= 0 && adjustedDepth <= maxDepth;
 
       const boxLeftX = width / 2 + boxXLeft * scale * width * 0.5;
@@ -149,7 +166,6 @@ const StarTunnelCanvas = () => {
         leftBoxRef.current.style.opacity = isVisible ? 1 : 0;
         leftBoxRef.current.style.pointerEvents = isVisible ? "auto" : "none";
       }
-
       if (rightBoxRef.current) {
         rightBoxRef.current.style.transform = `
           translate(-50%, -50%)
@@ -160,6 +176,36 @@ const StarTunnelCanvas = () => {
         rightBoxRef.current.style.opacity = isVisible ? 1 : 0;
         rightBoxRef.current.style.pointerEvents = isVisible ? "auto" : "none";
       }
+
+      // Display dynamic text boxes
+      texts.forEach((text, index) => {
+        const maxScrollToShow = -2000;
+        const targetZ = (-text.percent / 100) * maxScrollToShow;
+        const depth = (targetZ + currentScroll.current * 0.05) % maxDepth;
+        const adjustedDepth = depth < 0 ? depth + maxDepth : depth;
+        const scale = Math.min(25, 1 / (adjustedDepth * 0.1 + 0.04));
+        const isVisible = adjustedDepth >= 0 && adjustedDepth <= maxDepth;
+
+        const side = index % 2 === 0 ? -0.3 : 0.3;
+        const boxX = side;
+        const boxY = 0;
+
+        const x = width / 2 + boxX * scale * width * 0.5;
+        const y = height / 2 + boxY * scale * height * 0.5;
+
+        const textBox = textBoxRefs.current[index]?.ref?.current;
+
+        if (textBox) {
+          textBox.style.left = `${x}px`;
+          textBox.style.top = `${y}px`;
+          textBox.style.transform = `
+            translate(-50%, -50%)
+            scale(${scale})
+          `;
+          textBox.style.opacity = isVisible ? 1 : 0;
+          textBox.style.pointerEvents = isVisible ? "auto" : "none";
+        }
+      });
     };
 
     lastTime.current = performance.now();
@@ -178,18 +224,12 @@ const StarTunnelCanvas = () => {
     let lastTouchTime = 0;
 
     const container = containerRef.current;
-
     const maxScrollLimit = -2000;
 
     const handleWheel = (e) => {
       e.preventDefault();
-
       const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
-
-      if (proposedScroll > 0 || proposedScroll < maxScrollLimit) {
-        return;
-      }
-
+      if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
       targetScroll.current = proposedScroll;
     };
 
@@ -203,20 +243,13 @@ const StarTunnelCanvas = () => {
     const handleTouchMove = (e) => {
       if (!isDragging) return;
       e.preventDefault();
-
       const now = performance.now();
       const y = e.touches[0].clientY;
       const delta = lastY - y;
-
       const proposedScroll = targetScroll.current + delta * scrollSpeed * 1.5;
-
-      if (proposedScroll > 0 || proposedScroll < maxScrollLimit) {
-        return;
-      }
-
+      if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
       dragVelocity = delta / (now - lastTouchTime);
       targetScroll.current = proposedScroll;
-
       lastY = y;
       lastTouchTime = now;
     };
@@ -228,17 +261,14 @@ const StarTunnelCanvas = () => {
         const duration = 500;
         const startScroll = targetScroll.current;
         const distance = dragVelocity * duration * 0.3;
-
         const momentum = (time) => {
           const elapsed = time - startTime;
           if (elapsed >= duration) return;
-
           const t = elapsed / duration;
           const ease = 1 - Math.pow(t - 1, 3);
           targetScroll.current = startScroll + distance * ease;
           requestAnimationFrame(momentum);
         };
-
         requestAnimationFrame(momentum);
       }
     };
@@ -280,7 +310,7 @@ const StarTunnelCanvas = () => {
           height: "4px",
           width: "0%",
           maxWidth: "100%",
-          background: "linear-gradient(to right,rgba(0, 219, 0, 0.74),rgba(0, 116, 10, 0.74))",
+          background: "linear-gradient(to right, rgba(0, 219, 0, 0.74), rgba(0, 116, 10, 0.74))",
           transition: "width 0.1s linear",
           zIndex: 1000,
         }}
@@ -338,6 +368,35 @@ const StarTunnelCanvas = () => {
         <h3>Test</h3>
         <p>second text test.</p>
       </div>
+
+      {/* Dynamic Text Boxes */}
+      {texts.map((text, index) => (
+        <div
+          key={index}
+          ref={textBoxRefs.current[index]?.ref}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transformOrigin: "center center",
+            width: "200px",
+            padding: "15px",
+            backgroundColor: "rgba(40, 40, 40, 0.9)",
+            color: "white",
+            borderRadius: "10px",
+            pointerEvents: "none",
+            opacity: 0,
+            fontFamily: "sans-serif",
+            boxShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
+            zIndex: 1001,
+            transition: "opacity 0.2s ease",
+            userSelect: "none",
+          }}
+        >
+          <h3>{text.title}</h3>
+          <p>{text.content}</p>
+        </div>
+      ))}
     </div>
   );
 };
