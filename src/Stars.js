@@ -4,37 +4,40 @@ const StarTunnelCanvas = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const progressBarRef = useRef(null);
-
-  // NEW: Refs for left/right exhibition boxes
   const leftBoxRef = useRef(null);
   const rightBoxRef = useRef(null);
-
-  // NEW: Refs for dynamic text boxes
-  const textBoxRefs = useRef([]);
 
   const stars = useRef([]);
   const targetScroll = useRef(0);
   const currentScroll = useRef(0);
   const lastTime = useRef(0);
-
   const starCount = 150;
   const maxDepth = 20;
   const scrollSpeed = 0.5;
   const interpolation = 0.1;
 
-  // Texts to display at different scroll positions
-  const texts = [
-    { percent: 10, title: "Start", content: "Begin your journey through the stars." },
-    { percent: 20, title: "Formation", content: "Stars are born from clouds of gas." },
-    { percent: 30, title: "Galaxies", content: "We live in the Milky Way galaxy." },
-    { percent: 40, title: "Black Holes", content: "They're mysterious and powerful." },
-    { percent: 50, title: "Dark Matter", content: "It makes up most of the universe." },
-    { percent: 60, title: "Supernovae", content: "Stellar explosions seeding the cosmos." },
-    { percent: 70, title: "Exoplanets", content: "Planets beyond our solar system." },
-    { percent: 80, title: "Nebulas", content: "Giant clouds where stars are born." },
-    { percent: 90, title: "Time Travel", content: "Theoretical but fascinating." },
-    { percent: 100, title: "End", content: "Thanks for exploring!" },
+  // Content data
+  const leftContents = [
+    { title: "Exhibit A", description: "The dawn of civilization." },
+    { title: "Exhibit B", description: "Renaissance art and science." },
+    { title: "Exhibit C", description: "Modern digital evolution." },
+    { title: "Exhibit D", description: "AI shaping our future." },
+    { title: "Exhibit E", description: "The next frontier." },
+    { title: "", description: "" },
   ];
+  const rightContents = [
+    { title: "Planet X", description: "A mysterious new world." },
+    { title: "Galaxy Cluster", description: "Colliding galaxies in deep space." },
+    { title: "Quantum Realm", description: "Beyond time and space." },
+    { title: "Dark Matter", description: "Unseen but everywhere." },
+    { title: "Black Hole", description: "Where physics breaks down." },
+    { title: "last one", description: "asawdadwdsda" },
+  ];
+  
+  const currentLeftIndex = useRef(0);
+  const currentRightIndex = useRef(0);
+  const lastLeftDepth = useRef(0);
+  const lastRightDepth = useRef(0);
 
   // Generate golden ratio spiral stars
   useEffect(() => {
@@ -57,12 +60,6 @@ const StarTunnelCanvas = () => {
         }
       };
     });
-
-    // Initialize refs for each text box
-    textBoxRefs.current = texts.map(() => ({
-      ref: React.createRef(),
-      visible: false,
-    }));
   }, []);
 
   // Drawing and animation loop
@@ -101,30 +98,28 @@ const StarTunnelCanvas = () => {
         const scale = Math.min(25, 1 / (depth * 0.1 + 0.04));
         const size = star.size * scale;
         if (size < 0.6) continue;
-
         const x = width / 2 + star.x * scale * width * 0.5;
         const y = height / 2 + star.y * scale * height * 0.5;
-
         const fadeStart = maxDepth * 0.8;
         const distanceBrightness =
           depth > fadeStart
             ? 1 - ((depth - fadeStart) / (maxDepth - fadeStart)) * 0.9
             : 1;
-
         const alpha = star.baseBrightness * distanceBrightness * Math.min(1.5, scale * 1.2);
         const { r, g, b } = star.tint;
 
+        // Glow effect
         const glowSize = size * 2.3;
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, glowSize);
         gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${alpha * 0.2})`);
         gradient.addColorStop(0.4, `rgba(${r}, ${g}, ${b}, ${alpha * 0.1})`);
         gradient.addColorStop(1, "transparent");
-
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(x, y, glowSize, 0, Math.PI * 2);
         ctx.fill();
 
+        // Core dot
         ctx.beginPath();
         ctx.arc(x, y, size / 2, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
@@ -147,65 +142,61 @@ const StarTunnelCanvas = () => {
       const boxXRight = 0.3;
       const boxY = 0;
 
-      const depth = (boxZ + currentScroll.current * 0.05) % maxDepth;
-      const adjustedDepth = depth < 0 ? depth + maxDepth : depth;
-      const scale = Math.min(25, 1 / (adjustedDepth * 0.1 + 0.04));
-      const isVisible = adjustedDepth >= 0 && adjustedDepth <= maxDepth;
+      // Calculate depth with offset for staggering
+      const baseDepth = (boxZ + currentScroll.current * 0.05) % maxDepth;
+      const leftDepth = baseDepth;
+      const rightDepth = (baseDepth + maxDepth * 0.5) % maxDepth; // Offset right box by half the max depth
 
-      const boxLeftX = width / 2 + boxXLeft * scale * width * 0.5;
-      const boxRightX = width / 2 + boxXRight * scale * width * 0.5;
-      const boxYPos = height / 2 + boxY * scale * height * 0.5;
+      const adjustedLeftDepth = leftDepth < 0 ? leftDepth + maxDepth : leftDepth;
+      const adjustedRightDepth = rightDepth < 0 ? rightDepth + maxDepth : rightDepth;
 
-      if (leftBoxRef.current) {
-        leftBoxRef.current.style.transform = `
-          translate(-50%, -50%)
-          scale(${scale})
-        `;
-        leftBoxRef.current.style.left = `${boxLeftX}px`;
-        leftBoxRef.current.style.top = `${boxYPos}px`;
-        leftBoxRef.current.style.opacity = isVisible ? 1 : 0;
-        leftBoxRef.current.style.pointerEvents = isVisible ? "auto" : "none";
-      }
-      if (rightBoxRef.current) {
-        rightBoxRef.current.style.transform = `
-          translate(-50%, -50%)
-          scale(${scale})
-        `;
-        rightBoxRef.current.style.left = `${boxRightX}px`;
-        rightBoxRef.current.style.top = `${boxYPos}px`;
-        rightBoxRef.current.style.opacity = isVisible ? 1 : 0;
-        rightBoxRef.current.style.pointerEvents = isVisible ? "auto" : "none";
-      }
+      const leftScale = Math.min(25, 1 / (adjustedLeftDepth * 0.1 + 0.04));
+      const rightScale = Math.min(25, 1 / (adjustedRightDepth * 0.1 + 0.04));
 
-      // Display dynamic text boxes
-      texts.forEach((text, index) => {
-        const maxScrollToShow = -2000;
-        const targetZ = (-text.percent / 100) * maxScrollToShow;
-        const depth = (targetZ + currentScroll.current * 0.05) % maxDepth;
-        const adjustedDepth = depth < 0 ? depth + maxDepth : depth;
-        const scale = Math.min(25, 1 / (adjustedDepth * 0.1 + 0.04));
-        const isVisible = adjustedDepth >= 0 && adjustedDepth <= maxDepth;
+      const isLeftVisible = adjustedLeftDepth >= 0 && adjustedLeftDepth <= maxDepth;
+      const isRightVisible = adjustedRightDepth >= 0 && adjustedRightDepth <= maxDepth;
 
-        const side = index % 2 === 0 ? -0.3 : 0.3;
-        const boxX = side;
-        const boxY = 0;
+      const boxLeftX = width / 2 + boxXLeft * leftScale * width * 0.5;
+      const boxRightX = width / 2 + boxXRight * rightScale * width * 0.5;
+      const boxLeftYPos = height / 2 + boxY * leftScale * height * 0.5;
+      const boxRightYPos = height / 2 + boxY * rightScale * height * 0.5;
 
-        const x = width / 2 + boxX * scale * width * 0.5;
-        const y = height / 2 + boxY * scale * height * 0.5;
+      // Calculate section indices based on scroll position
+      const sectionLength = maxDepth * 20;
+      const sectionIndex = Math.floor(-currentScroll.current / sectionLength) % leftContents.length;
+      const clampedSectionIndex = Math.max(0, Math.min(sectionIndex, leftContents.length - 1));
 
-        const textBox = textBoxRefs.current[index]?.ref?.current;
-
-        if (textBox) {
-          textBox.style.left = `${x}px`;
-          textBox.style.top = `${y}px`;
-          textBox.style.transform = `
-            translate(-50%, -50%)
-            scale(${scale})
+      // Check if left box is wrapping around (going from back to front)
+      console.log(currentScroll.current ) 
+      const content = leftContents[Math.floor(-(currentScroll.current + 400)/400) + 1];
+          leftBoxRef.current.innerHTML = `
+            <h3>${content.title}</h3>
+            <p>${content.description}</p>
           `;
-          textBox.style.opacity = isVisible ? 1 : 0;
-          textBox.style.pointerEvents = isVisible ? "auto" : "none";
-        }
-      });
+
+
+      const contentRight = rightContents[Math.floor(-(currentScroll.current + 200)/400) + 1];
+          rightBoxRef.current.innerHTML = `
+            <h3>${contentRight.title}</h3>
+            <p>${contentRight.description}</p>
+          `;
+
+      // Update styles
+      if (leftBoxRef.current) {
+        leftBoxRef.current.style.transform = `translate(-50%, -50%) scale(${leftScale})`;
+        leftBoxRef.current.style.left = `${boxLeftX}px`;
+        leftBoxRef.current.style.top = `${boxLeftYPos}px`;
+        leftBoxRef.current.style.opacity = isLeftVisible ? 1 : 0;
+        leftBoxRef.current.style.pointerEvents = isLeftVisible ? "auto" : "none";
+      }
+
+      if (rightBoxRef.current) {
+        rightBoxRef.current.style.transform = `translate(-50%, -50%) scale(${rightScale})`;
+        rightBoxRef.current.style.left = `${boxRightX}px`;
+        rightBoxRef.current.style.top = `${boxRightYPos}px`;
+        rightBoxRef.current.style.opacity = isRightVisible ? 1 : 0;
+        rightBoxRef.current.style.pointerEvents = isRightVisible ? "auto" : "none";
+      }
     };
 
     lastTime.current = performance.now();
@@ -214,7 +205,7 @@ const StarTunnelCanvas = () => {
     return () => {
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [leftContents, rightContents]);
 
   // Scroll event handling
   useEffect(() => {
@@ -300,7 +291,6 @@ const StarTunnelCanvas = () => {
       }}
     >
       <canvas ref={canvasRef} style={{ display: "block" }} />
-
       {/* Scroll Progress Bar */}
       <div
         style={{
@@ -316,7 +306,6 @@ const StarTunnelCanvas = () => {
         }}
         ref={progressBarRef}
       />
-
       {/* Left Exhibition Box */}
       <div
         ref={leftBoxRef}
@@ -337,12 +326,11 @@ const StarTunnelCanvas = () => {
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
-        onClick={() => alert("Left box clicked!")}
+        onClick={() => alert(`Left box: ${leftContents[currentLeftIndex.current]?.title}`)}
       >
-        <h3>Test</h3>
-        <p>testing texts</p>
+        <h3>{leftContents[0].title}</h3>
+        <p>{leftContents[0].description}</p>
       </div>
-
       {/* Right Exhibition Box */}
       <div
         ref={rightBoxRef}
@@ -363,40 +351,11 @@ const StarTunnelCanvas = () => {
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
-        onClick={() => alert("Right box clicked!")}
+        onClick={() => alert(`Right box: ${rightContents[currentRightIndex.current]?.title}`)}
       >
-        <h3>Test</h3>
-        <p>second text test.</p>
+        <h3>{rightContents[0].title}</h3>
+        <p>{rightContents[0].description}</p>
       </div>
-
-      {/* Dynamic Text Boxes */}
-      {texts.map((text, index) => (
-        <div
-          key={index}
-          ref={textBoxRefs.current[index]?.ref}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transformOrigin: "center center",
-            width: "200px",
-            padding: "15px",
-            backgroundColor: "rgba(40, 40, 40, 0.9)",
-            color: "white",
-            borderRadius: "10px",
-            pointerEvents: "none",
-            opacity: 0,
-            fontFamily: "sans-serif",
-            boxShadow: "0 0 10px rgba(0, 255, 255, 0.5)",
-            zIndex: 1001,
-            transition: "opacity 0.2s ease",
-            userSelect: "none",
-          }}
-        >
-          <h3>{text.title}</h3>
-          <p>{text.content}</p>
-        </div>
-      ))}
     </div>
   );
 };
