@@ -152,7 +152,7 @@ const StarTunnelCanvas = () => {
       currentLeftIndex.current = Math.floor(-(currentScroll.current + 400) / 400) + 1;
       currentRightIndex.current = Math.floor(-(currentScroll.current + 180) / 400) + 1;
       if (previousScroll + 20 < -currentScroll.current || previousScroll - 20 > -currentScroll.current) {
-        const contentLeft = leftContents[Math.floor(-(currentScroll.current + 400) / 400) + 1];
+        const contentLeft = leftContents[Math.floor(-(currentScroll.current + 370) / 400) + 1];
         
         if (leftBoxRef.current && contentLeft) {
           leftBoxRef.current.innerHTML = `
@@ -387,49 +387,83 @@ const StarTunnelCanvas = () => {
         <p>{rightContents[0].description}</p>
       </div>
 
-      {/* Overlay Blur & Text for Left Box Click */}
       {showOverlay && overlaySide === "left" && (
-        <div onClick={() => setShowOverlay(false)} style={{ position: 'fixed', inset: 0 ,zIndex: 9999}}>
+        <div
+          onClick={() => setShowOverlay(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "flex-end", // Right side blur
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          {/* Right Blur Overlay */}
           <div
             style={{
               position: "fixed",
               top: 0,
-              left: "50%",
+              right: 0,
               width: "50%",
               height: "100vh",
-              backdropFilter: "blur(6px)",
+              backdropFilter: "blur(12px)",
               backgroundColor: "rgba(128, 128, 128, 0.4)",
               zIndex: 1001,
               pointerEvents: "auto",
             }}
             onClick={(e) => e.stopPropagation()}
-          />
-          <div
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "75%",
-              transform: "translate(-50%, -50%)",
-              width: "300px",
-              padding: "20px",
-              backgroundColor: "rgba(40, 40, 40, 0.95)",
-              color: "white",
-              borderRadius: "10px",
-              textAlign: "center",
-              boxShadow: "0 0 10px rgba(100, 100, 100, 0.5)",
-              zIndex: 1002,
-              pointerEvents: "auto",
-            }}
           >
-            <h2>{overlayData?.title}</h2>
-            <p>{overlayData?.description}</p>
+            <div
+              style={{
+                padding: "40px 20px",
+                textAlign: "center",
+                color: "#fff",
+                maxWidth: "90%",
+                margin: "0 auto",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 style={{ fontSize: "28px", marginBottom: "20px" }}>
+                {overlayData?.title}
+              </h2>
+              {overlayData?.img && (
+                <img
+                  src={overlayData.img}
+                  alt="Overlay"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "300px",
+                    objectFit: "contain",
+                    marginBottom: "20px",
+                    borderRadius: "12px",
+                  }}
+                />
+              )}
+              <p style={{ fontSize: "18px", lineHeight: "1.6" }}>
+                {overlayData?.paragraph}
+              </p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Overlay Blur & Text for Right Box Click */}
+
       {showOverlay && overlaySide === "right" && (
-        <div onClick={() => setShowOverlay(false)} style={{ position: 'fixed', inset: 0 ,zIndex: 9999, }}>
+        <div
+          onClick={() => setShowOverlay(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "flex-start", // Left side blur
+            alignItems: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          {/* Left Blur Overlay */}
           <div
             style={{
               position: "fixed",
@@ -437,32 +471,44 @@ const StarTunnelCanvas = () => {
               left: 0,
               width: "50%",
               height: "100vh",
-              backdropFilter: "blur(6px)",
+              backdropFilter: "blur(12px)",
               backgroundColor: "rgba(128, 128, 128, 0.4)",
               zIndex: 1001,
               pointerEvents: "auto",
             }}
             onClick={(e) => e.stopPropagation()}
-          />
-          <div
-            style={{
-              position: "fixed",
-              top: "50%",
-              left: "25%",
-              transform: "translate(-50%, -50%)",
-              width: "300px",
-              padding: "20px",
-              backgroundColor: "rgba(40, 40, 40, 0.95)",
-              color: "white",
-              borderRadius: "10px",
-              textAlign: "center",
-              boxShadow: "0 0 10px rgba(100, 100, 100, 0.5)",
-              zIndex: 1002,
-              pointerEvents: "auto",
-            }}
           >
-            <h2>{overlayData?.title}</h2>
-            <p>{overlayData?.description}</p>
+            {/* Content Box */}
+            <div
+              style={{
+                padding: "40px 20px",
+                textAlign: "center",
+                color: "#fff",
+                maxWidth: "90%",
+                margin: "0 auto",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 style={{ fontSize: "28px", marginBottom: "20px" }}>
+                {overlayData?.title}
+              </h2>
+              {overlayData?.img && (
+                <img
+                  src={overlayData.img}
+                  alt="Overlay"
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "300px",
+                    objectFit: "contain",
+                    marginBottom: "20px",
+                    borderRadius: "12px",
+                  }}
+                />
+              )}
+              <p style={{ fontSize: "18px", lineHeight: "1.6" }}>
+                {overlayData?.paragraph}
+              </p>
+            </div>
           </div>
         </div>
       )}
