@@ -290,7 +290,7 @@ const StarTunnelCanvas = () => {
           position: "fixed",
           bottom: 0,
           left: 0,
-          height: "4px",
+          height: "8px",
           width: "0%",
           maxWidth: "100%",
           background: "linear-gradient(to right, rgba(0, 219, 0, 0.74), rgba(0, 116, 10, 0.74))",
