@@ -1,6 +1,6 @@
 // content.js
 export const leftContents = [
-    { title: "Julius Caesar", description: "The Roman general who seized absolute power and paved the way for imperial dictatorship.", img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
+    { title: "Julius Caesar", description: "The Roman general who seized absolute power and paved the way for imperial dictatorship.", img: "https://upload.wikimedia.org/wikipedia/commons/6/62/Retrato_de_Julio_C%C3%A9sar_%2826724093101%29_%28cropped%29.jpg"},
     { title: "Genghis Khan", description: "The Mongol warlord who built an empire through ruthless conquest and fear." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
     { title: "Adolf Hitler", description: "The Nazi dictator who led Germany into genocide, war, and destruction." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
     { title: "Francisco Franco", description: "The Spanish general who ruled with an iron fist after a bloody civil war." , img: "https://cdn.discordapp.com/icons/1338812429202751539/9c65e24d9a954c8b362f94b50441ac07.webp?size=96&quality=lossless"},
