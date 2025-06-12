@@ -209,7 +209,7 @@ const StarTunnelCanvas = () => {
     const maxScrollLimit = -2000;
 
     const handleWheel = (e) => {
-      e.preventDefault();
+
       setShowOverlay(false)
       const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
       if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
@@ -398,6 +398,8 @@ const StarTunnelCanvas = () => {
             justifyContent: "flex-end", // Right side blur
             alignItems: "center",
             backgroundColor: "rgba(0, 0, 0, 0.3)",
+            overflowY: "auto", 
+            maxHeight: "100vh", 
           }}
         >
           {/* Right Blur Overlay */}
@@ -474,6 +476,8 @@ const StarTunnelCanvas = () => {
               backdropFilter: "blur(12px)",
               backgroundColor: "rgba(128, 128, 128, 0.4)",
               zIndex: 1001,
+              overflowY: "auto", 
+              maxHeight: "100vh", 
               pointerEvents: "auto",
             }}
             onClick={(e) => e.stopPropagation()}
