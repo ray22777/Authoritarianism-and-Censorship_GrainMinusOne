@@ -1,13 +1,13 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { leftContents } from "./content";
 import { rightContents } from "./content";
+
 const StarTunnelCanvas = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const progressBarRef = useRef(null);
   const leftBoxRef = useRef(null);
   const rightBoxRef = useRef(null);
-
   const stars = useRef([]);
   const targetScroll = useRef(0);
   const currentScroll = useRef(0);
@@ -17,13 +17,15 @@ const StarTunnelCanvas = () => {
   const scrollSpeed = 0.5;
   const interpolation = 0.1;
   let previousScroll = 0;
-  // Content data
 
-  
+  // Content data
   const currentLeftIndex = useRef(0);
   const currentRightIndex = useRef(0);
-  const lastLeftDepth = useRef(0);
-  const lastRightDepth = useRef(0);
+
+  // Overlay state
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [overlayData, setOverlayData] = useState(null);
+  const [overlaySide, setOverlaySide] = useState("left"); // 'left' or 'right'
 
   // Generate golden ratio spiral stars
   useEffect(() => {
@@ -43,7 +45,7 @@ const StarTunnelCanvas = () => {
           r: 200 + Math.floor(Math.random() * 56),
           g: 200 + Math.floor(Math.random() * 56),
           b: 220 + Math.floor(Math.random() * 36),
-        }
+        },
       };
     });
   }, []);
@@ -54,14 +56,12 @@ const StarTunnelCanvas = () => {
     const ctx = canvas.getContext("2d");
     let width = window.innerWidth;
     let height = window.innerHeight;
-
     const resize = () => {
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = width;
       canvas.height = height;
     };
-
     window.addEventListener("resize", resize);
     resize();
 
@@ -69,7 +69,6 @@ const StarTunnelCanvas = () => {
       requestAnimationFrame(draw);
       const deltaTime = time - lastTime.current;
       lastTime.current = time;
-
       const scrollDelta = targetScroll.current - currentScroll.current;
       currentScroll.current += scrollDelta * interpolation * (deltaTime / 16.67);
 
@@ -128,41 +127,52 @@ const StarTunnelCanvas = () => {
       const boxXRight = 0.3;
       const boxY = 0;
 
-      // Calculate depth with offset for staggering
       const baseDepth = (boxZ + currentScroll.current * 0.05) % maxDepth;
       const leftDepth = baseDepth;
-      const rightDepth = (baseDepth + maxDepth * 0.5) % maxDepth; // Offset right box by half the max depth
+      const rightDepth = (baseDepth + maxDepth * 0.5) % maxDepth;
+
       const adjustedLeftDepth = leftDepth < 0 ? leftDepth + maxDepth : leftDepth;
       const adjustedRightDepth = rightDepth < 0 ? rightDepth + maxDepth : rightDepth;
+
       const leftScale = Math.min(25, 1 / (adjustedLeftDepth * 0.1 + 0.04));
       const rightScale = Math.min(25, 1 / (adjustedRightDepth * 0.1 + 0.04));
+
       const isLeftVisible = adjustedLeftDepth >= 0 && adjustedLeftDepth <= maxDepth;
       const isRightVisible = adjustedRightDepth >= 0 && adjustedRightDepth <= maxDepth;
+
       const boxLeftX = width / 2 + boxXLeft * leftScale * width * 0.5;
       const boxRightX = width / 2 + boxXRight * rightScale * width * 0.5;
       const boxLeftYPos = height / 2 + boxY * leftScale * height * 0.5;
       const boxRightYPos = height / 2 + boxY * rightScale * height * 0.5;
 
-      // Calculate section indices based on scroll position
+      // Update section indices based on scroll position
       const sectionLength = maxDepth * 20;
       const sectionIndex = Math.floor(-currentScroll.current / sectionLength) % leftContents.length;
       const clampedSectionIndex = Math.max(0, Math.min(sectionIndex, leftContents.length - 1));
-      if(previousScroll + 20 < -currentScroll.current){
-        const contentLeft = leftContents[Math.floor(-(currentScroll.current + 400)/400) + 1];
-            leftBoxRef.current.innerHTML = `
-                <img alt="Icon" src=${contentLeft.img} style="display: block; margin: 0px auto 10px; border-radius: 8px; max-width: 100%;">
-                <h3>${contentLeft.title}</h3>
-                <p>${contentLeft.description}</p>
-            `;
-        const contentRight = rightContents[Math.floor(-(currentScroll.current + 200)/400) + 1];
-            rightBoxRef.current.innerHTML = `
-                <img alt="Icon" src=${contentRight.img} style="display: block; margin: 0px auto 10px; border-radius: 8px; max-width: 100%;">
-                <h3>${contentRight.title}</h3>
-                <p>${contentRight.description}</p>
-            `;
+      currentLeftIndex.current = Math.floor(-(currentScroll.current + 400) / 400) + 1;
+      currentRightIndex.current = Math.floor(-(currentScroll.current + 180) / 400) + 1;
+      if (previousScroll + 20 < -currentScroll.current || previousScroll - 20 > -currentScroll.current) {
+        const contentLeft = leftContents[Math.floor(-(currentScroll.current + 400) / 400) + 1];
+        
+        if (leftBoxRef.current && contentLeft) {
+          leftBoxRef.current.innerHTML = `
+            <img alt="Icon" src=${contentLeft.img} style="display: block; margin: 0 auto 10px; border-radius: 8px; max-width: 100%;">
+            <h3>${contentLeft.title}</h3>
+            <p>${contentLeft.description}</p>
+          `;
+        }
+
+        const contentRight = rightContents[Math.floor(-(currentScroll.current + 180) / 400) + 1];
+        if (rightBoxRef.current && contentRight) {
+          rightBoxRef.current.innerHTML = `
+            <img alt="Icon" src=${contentRight.img} style="display: block; margin: 0 auto 10px; border-radius: 8px; max-width: 100%;">
+            <h3>${contentRight.title}</h3>
+            <p>${contentRight.description}</p>
+          `;
+        }
+
         previousScroll = -currentScroll.current;
       }
- 
 
       // Update styles
       if (leftBoxRef.current) {
@@ -172,7 +182,6 @@ const StarTunnelCanvas = () => {
         leftBoxRef.current.style.opacity = isLeftVisible ? 1 : 0;
         leftBoxRef.current.style.pointerEvents = isLeftVisible ? "auto" : "none";
       }
-
       if (rightBoxRef.current) {
         rightBoxRef.current.style.transform = `translate(-50%, -50%) scale(${rightScale})`;
         rightBoxRef.current.style.left = `${boxRightX}px`;
@@ -196,13 +205,12 @@ const StarTunnelCanvas = () => {
     let lastY = 0;
     let dragVelocity = 0;
     let lastTouchTime = 0;
-
     const container = containerRef.current;
     const maxScrollLimit = -2000;
 
     const handleWheel = (e) => {
       e.preventDefault();
-
+      setShowOverlay(false)
       const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
       if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
       targetScroll.current = proposedScroll;
@@ -271,10 +279,11 @@ const StarTunnelCanvas = () => {
         width: "100vw",
         height: "100vh",
         overflow: "hidden",
-        touchAction: "none"
+        touchAction: "none",
       }}
     >
       <canvas ref={canvasRef} style={{ display: "block" }} />
+
       {/* Scroll Progress Bar */}
       <div
         style={{
@@ -290,6 +299,7 @@ const StarTunnelCanvas = () => {
         }}
         ref={progressBarRef}
       />
+
       {/* Left Exhibition Box */}
       <div
         ref={leftBoxRef}
@@ -310,22 +320,31 @@ const StarTunnelCanvas = () => {
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
-        onClick={() => alert(`Left box: ${leftContents[currentLeftIndex.current]?.title}`)}
-      >
-      <img
-        src={leftContents[0].img}
-        alt="Icon"
-        style={{
-          display: "block",
-          margin: "0 auto 10px",
-          borderRadius: "8px",
-          maxWidth: "100%",
+        onClick={() => {
+          const content = leftContents[currentLeftIndex.current];
+          if (content) {
+            setOverlayData(content);
+            setOverlaySide("left");
+            setShowOverlay(true);
+          }
         }}
-      />
+      >
+        <img
+          src={leftContents[0].img}
+          alt="Icon"
+          style={{
+            display: "block",
+            margin: "0 auto 10px",
+            borderRadius: "8px",
+            maxWidth: "100%",
+          }}
+        />
         <h3>{leftContents[0].title}</h3>
         <p>{leftContents[0].description}</p>
       </div>
+
       {/* Right Exhibition Box */}
+      
       <div
         ref={rightBoxRef}
         style={{
@@ -345,23 +364,108 @@ const StarTunnelCanvas = () => {
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
-        onClick={() => alert(`Right box: ${rightContents[currentRightIndex.current]?.title}`)}
-        
-      >
-      <img
-        src={rightContents[0].img}
-        alt="Icon"
-        style={{
-          display: "block",
-          margin: "0 auto 10px",
-          borderRadius: "8px",
-          maxWidth: "100%",
+        onClick={() => {
+          const rcontent = rightContents[currentRightIndex.current];
+          if (rcontent) {
+            setOverlayData(rcontent);
+            setOverlaySide("right");
+            setShowOverlay(true);
+          }
         }}
-      />
+      >
+        <img
+          src={rightContents[0].img}
+          alt="Icon"
+          style={{
+            display: "block",
+            margin: "0 auto 10px",
+            borderRadius: "8px",
+            maxWidth: "100%",
+          }}
+        />
         <h3>{rightContents[0].title}</h3>
         <p>{rightContents[0].description}</p>
       </div>
 
+      {/* Overlay Blur & Text for Left Box Click */}
+      {showOverlay && overlaySide === "left" && (
+        <div onClick={() => setShowOverlay(false)} style={{ position: 'fixed', inset: 0 ,zIndex: 9999}}>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: "50%",
+              width: "50%",
+              height: "100vh",
+              backdropFilter: "blur(6px)",
+              backgroundColor: "rgba(128, 128, 128, 0.4)",
+              zIndex: 1001,
+              pointerEvents: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "75%",
+              transform: "translate(-50%, -50%)",
+              width: "300px",
+              padding: "20px",
+              backgroundColor: "rgba(40, 40, 40, 0.95)",
+              color: "white",
+              borderRadius: "10px",
+              textAlign: "center",
+              boxShadow: "0 0 10px rgba(100, 100, 100, 0.5)",
+              zIndex: 1002,
+              pointerEvents: "auto",
+            }}
+          >
+            <h2>{overlayData?.title}</h2>
+            <p>{overlayData?.description}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Overlay Blur & Text for Right Box Click */}
+      {showOverlay && overlaySide === "right" && (
+        <div onClick={() => setShowOverlay(false)} style={{ position: 'fixed', inset: 0 ,zIndex: 9999, }}>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "50%",
+              height: "100vh",
+              backdropFilter: "blur(6px)",
+              backgroundColor: "rgba(128, 128, 128, 0.4)",
+              zIndex: 1001,
+              pointerEvents: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <div
+            style={{
+              position: "fixed",
+              top: "50%",
+              left: "25%",
+              transform: "translate(-50%, -50%)",
+              width: "300px",
+              padding: "20px",
+              backgroundColor: "rgba(40, 40, 40, 0.95)",
+              color: "white",
+              borderRadius: "10px",
+              textAlign: "center",
+              boxShadow: "0 0 10px rgba(100, 100, 100, 0.5)",
+              zIndex: 1002,
+              pointerEvents: "auto",
+            }}
+          >
+            <h2>{overlayData?.title}</h2>
+            <p>{overlayData?.description}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
