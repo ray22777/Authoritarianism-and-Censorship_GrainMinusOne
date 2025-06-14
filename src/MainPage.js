@@ -165,7 +165,8 @@ const MainPage = ({ onExplore }) => {
                         Aliqu diam amet diam et eos. Clita erat ipsum et lorem sed
                         stet lorem sit clita duo justo erat amet
                     </p>
-                    <a
+                    <btn
+                        onClick={onExplore}
                         className="btn btn-primary py-2 px-3 animated slideInDown"
                         href=""
                     >
@@ -173,7 +174,7 @@ const MainPage = ({ onExplore }) => {
                         <div className="d-inline-flex btn-sm-square bg-white text-primary rounded-circle ms-2">
                         <i className="fa fa-arrow-right" />
                         </div>
-                    </a>
+                    </btn>
                     </div>
                 </div>
                 </div>
@@ -207,24 +208,6 @@ const MainPage = ({ onExplore }) => {
             </div>
             </div>
         </div>
-        <button
-            className="carousel-control-prev"
-            type="button"
-            data-bs-target="#header-carousel"
-            data-bs-slide="prev"
-        >
-            <span className="carousel-control-prev-icon" aria-hidden="true" />
-            <span className="visually-hidden">Previous</span>
-        </button>
-        <button
-            className="carousel-control-next"
-            type="button"
-            data-bs-target="#header-carousel"
-            data-bs-slide="next"
-        >
-            <span className="carousel-control-next-icon" aria-hidden="true" />
-            <span className="visually-hidden">Next</span>
-        </button>
         </div>
     </div>
     {/* Carousel End */}
