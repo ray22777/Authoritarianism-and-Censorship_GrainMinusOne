@@ -17,6 +17,7 @@
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",
     "react-scripts": "5.0.1",
+    "react-waypoint": "^10.3.0",
     "sass": "^1.89.2",
     "three": "^0.176.0",
     "waypoints": "^4.0.1",

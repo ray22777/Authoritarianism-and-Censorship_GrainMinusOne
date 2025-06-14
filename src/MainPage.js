@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import './App.css';
-import './css/bootstrap.min.css';
-import './js/main.js';
+
 
 const MainPage = ({ onExplore }) => {
   return (
@@ -14,6 +12,7 @@ const MainPage = ({ onExplore }) => {
     {/* Favicon */}
     <link href="img/favicon.ico" rel="icon" />
     {/* Google Web Fonts */}
+    
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
     <link
@@ -29,6 +28,7 @@ const MainPage = ({ onExplore }) => {
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css"
         rel="stylesheet"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
     {/* Libraries Stylesheet */}
     <link href="lib/animate/animate.min.css" rel="stylesheet" />
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />

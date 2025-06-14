@@ -1,13 +1,3 @@
-
-import jQuery from 'jquery';  // Must come first
-import 'waypoints/lib/noframework.waypoints';
-import WOW from 'wow.js'
-
-window.jQuery = jQuery;
-
-
-// Then use it
-new WOW().init();
 (function ($) {
     "use strict";
 
