@@ -446,3 +446,9 @@
 .footer .copyright a:hover {
     color: var(--primary);
 }
+
+.nametitle {
+  all: unset; /* Resets all inherited and default styles */
+  font-size: 16px; /* Customize as needed */
+  color: #feffb9;
+}

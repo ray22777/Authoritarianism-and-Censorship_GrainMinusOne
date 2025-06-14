@@ -16,6 +16,7 @@ const StarTunnelCanvas = () => {
   const maxDepth = 20;
   const scrollSpeed = 0.5;
   const interpolation = 0.1;
+  const textBoxColor = 'rgb(250, 255, 203)'
   let previousScroll = 0;
 
   // Content data
@@ -157,8 +158,8 @@ const StarTunnelCanvas = () => {
         if (leftBoxRef.current && contentLeft) {
           leftBoxRef.current.innerHTML = `
             <img alt="Icon" src=${contentLeft.img} style="display: block; margin: 0 auto 10px; border-radius: 8px; max-width: 100%;">
-            <h3>${contentLeft.title}</h3>
-            <p>${contentLeft.description}</p>
+            <h3 className="nametitle" style="color: rgb(250, 255, 203);">${contentLeft.title}</h3>
+            <p><i>${contentLeft.description}</i></p>
           `;
         }
 
@@ -166,8 +167,8 @@ const StarTunnelCanvas = () => {
         if (rightBoxRef.current && contentRight) {
           rightBoxRef.current.innerHTML = `
             <img alt="Icon" src=${contentRight.img} style="display: block; margin: 0 auto 10px; border-radius: 8px; max-width: 100%;">
-            <h3>${contentRight.title}</h3>
-            <p>${contentRight.description}</p>
+            <h3 className="nametitle" style="color: rgb(250, 255, 203);">${contentRight.title}</h3>
+            <p><i>${contentRight.description}</i></p>
           `;
         }
 
@@ -290,7 +291,7 @@ const StarTunnelCanvas = () => {
           position: "fixed",
           bottom: 0,
           left: 0,
-          height: "8spx",
+          height: "8px",
           width: "0%",
           maxWidth: "100%",
           background: "linear-gradient(to right, rgba(0, 219, 0, 0.74), rgba(0, 116, 10, 0.74))",
@@ -339,8 +340,8 @@ const StarTunnelCanvas = () => {
             maxWidth: "100%",
           }}
         />
-        <h3>{leftContents[0].title}</h3>
-        <p>{leftContents[0].description}</p>
+        <h3 className="nametitle" style={{ color: textBoxColor }}>{leftContents[0].title}</h3>
+        <p><i>{leftContents[0].description}</i></p>
       </div>
 
       {/* Right Exhibition Box */}
@@ -383,8 +384,8 @@ const StarTunnelCanvas = () => {
             maxWidth: "100%",
           }}
         />
-        <h3>{rightContents[0].title}</h3>
-        <p>{rightContents[0].description}</p>
+        <h3 className="nametitle" style={{ color: textBoxColor }}>{rightContents[0].title}</h3>
+        <p><i>{rightContents[0].description}</i></p>
       </div>
 
       {showOverlay && overlaySide === "left" && (
