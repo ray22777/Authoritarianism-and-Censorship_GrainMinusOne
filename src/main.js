@@ -1,6 +1,6 @@
 
 
-import $ from "./jquery-setup"; // ✅ Sets up global $
+import $ from "../../src/jquery-setup"; // ✅ Sets up global $
 import 'react-waypoint'
 import WOW from 'wow.js'
 

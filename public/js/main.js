@@ -54,7 +54,5 @@ window.addEventListener('load', function () {
       });
     }, { offset: '80%' });
 
-
-
   })(jQuery);
 });
