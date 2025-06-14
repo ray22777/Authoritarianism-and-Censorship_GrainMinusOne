@@ -428,7 +428,7 @@ const StarTunnelCanvas = () => {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 style={{ fontSize: "28px", marginBottom: "20px" }}>
+              <h2 style={{ fontSize: "28px", marginBottom: "20px" ,color: textBoxColor}}>
                 {overlayData?.title}
               </h2>
               {overlayData?.img && (
@@ -494,7 +494,7 @@ const StarTunnelCanvas = () => {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2 style={{ fontSize: "28px", marginBottom: "20px" }}>
+              <h2 style={{ fontSize: "28px", marginBottom: "20px" ,color: textBoxColor}}>
                 {overlayData?.title}
               </h2>
               {overlayData?.img && (
