@@ -5,7 +5,6 @@ import MainPage from "./MainPage";
 
 const App = () => {
   const [showTunnel, setShowTunnel] = useState(false);
-
   return (
     <div>
       {showTunnel ? (

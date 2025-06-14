@@ -30,8 +30,6 @@ const MainPage = ({ onExplore }) => {
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
     {/* Libraries Stylesheet */}
-    <link href="lib/animate/animate.min.css" rel="stylesheet" />
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
     {/* Customized Bootstrap Stylesheet */}
     <link href="css/bootstrap.min.css" rel="stylesheet" />
     {/* Template Stylesheet */}
