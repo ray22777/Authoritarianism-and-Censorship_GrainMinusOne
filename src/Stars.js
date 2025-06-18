@@ -12,6 +12,7 @@ const StarTunnelCanvas = () => {
   const targetScroll = useRef(0);
   const currentScroll = useRef(0);
   const lastTime = useRef(0);
+  const isFocused = useRef(false);
   const starCount = 150;
   const maxDepth = 20;
   const scrollSpeed = 0.5;
@@ -209,12 +210,12 @@ const StarTunnelCanvas = () => {
     const container = containerRef.current;
     const maxScrollLimit = -2000;
 
-    const handleWheel = (e) => {
-
-      setShowOverlay(false)
-      const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
-      if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
-      targetScroll.current = proposedScroll;
+    const handleWheel = (e) => {    
+      if(isFocused.current === false){
+        const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
+        if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
+        targetScroll.current = proposedScroll;
+      }
     };
 
     const handleTouchStart = (e) => {
@@ -328,6 +329,7 @@ const StarTunnelCanvas = () => {
             setOverlaySide("left");
             setShowOverlay(true);
           }
+          isFocused.current = true
         }}
       >
         <img
@@ -371,6 +373,7 @@ const StarTunnelCanvas = () => {
             setOverlayData(rcontent);
             setOverlaySide("right");
             setShowOverlay(true);
+            isFocused.current = true
           }
         }}
       >
@@ -390,7 +393,10 @@ const StarTunnelCanvas = () => {
 
       {showOverlay && overlaySide === "left" && (
         <div
-          onClick={() => setShowOverlay(false)}
+          onClick={() => {
+            setShowOverlay(false)
+            isFocused.current = false
+          }}
           style={{
             position: "fixed",
             inset: 0,
@@ -405,6 +411,7 @@ const StarTunnelCanvas = () => {
         >
           {/* Right Blur Overlay */}
           <div
+          
             style={{
               position: "fixed",
               top: 0,
@@ -413,11 +420,41 @@ const StarTunnelCanvas = () => {
               height: "100vh",
               backdropFilter: "blur(12px)",
               backgroundColor: "rgba(128, 128, 128, 0.4)",
+              overflowY: "auto", 
               zIndex: 1001,
               pointerEvents: "auto",
             }}
             onClick={(e) => e.stopPropagation()}
           >
+          <button
+            onClick={() => {
+              setShowOverlay(false);
+              isFocused.current = false;
+            }}
+            style={{
+              position: "absolute",
+              top: "5px",
+              right: "20px",
+              background: "transparent",
+              border: "none",
+              fontSize: "40px",
+              color: "#fff",
+              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.8)", // Shadow only on the text
+              cursor: "pointer",
+              transition: "color 0.2s, transform 0.2s", // Smooth hover effect
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "rgb(133, 133, 133)";         // Optional hover color
+              e.currentTarget.style.transform = "scale(1.15)"; // Slight zoom
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = " #fff";
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+            aria-label="Close"
+          >
+            ×
+          </button>
             <div
               style={{
                 padding: "40px 20px",
@@ -455,7 +492,11 @@ const StarTunnelCanvas = () => {
 
       {showOverlay && overlaySide === "right" && (
         <div
-          onClick={() => setShowOverlay(false)}
+          onClick={() => {
+            setShowOverlay(false)
+            isFocused.current = false
+          }}
+          
           style={{
             position: "fixed",
             inset: 0,
@@ -464,6 +505,7 @@ const StarTunnelCanvas = () => {
             justifyContent: "flex-start", // Left side blur
             alignItems: "center",
             backgroundColor: "rgba(0, 0, 0, 0.3)",
+            
           }}
         >
           {/* Left Blur Overlay */}
@@ -483,6 +525,36 @@ const StarTunnelCanvas = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
+          <button
+            onClick={() => {
+              setShowOverlay(false);
+              isFocused.current = false;
+            }}
+            style={{
+              position: "absolute",
+              top: "5px",
+              right: "20px",
+              background: "transparent",
+              border: "none",
+              fontSize: "40px",
+              color: "#fff",
+              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.8)", // Shadow only on the text
+              cursor: "pointer",
+              transition: "color 0.2s, transform 0.2s", // Smooth hover effect
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "rgb(133, 133, 133)";         // Optional hover color
+              e.currentTarget.style.transform = "scale(1.15)"; // Slight zoom
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = " #fff";
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+            aria-label="Close"
+          >
+            ×
+          </button>
+
             {/* Content Box */}
             <div
               style={{
