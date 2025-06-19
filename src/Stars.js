@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { leftContents } from "./content";
 import { rightContents } from "./content";
-
+import onExplore from "./App"
 const StarTunnelCanvas = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -19,11 +19,13 @@ const StarTunnelCanvas = () => {
   const interpolation = 0.1;
   const textBoxColor = 'rgb(250, 255, 203)'
   let previousScroll = 0;
-
-  // Content data
+  const centerZoomRef = useRef(null);
+    // Content data
   const currentLeftIndex = useRef(0);
   const currentRightIndex = useRef(0);
-
+  const centerBoxHover = useRef(false);
+  const leftBoxHover = useRef(false);
+  const rightBoxHover = useRef(false);
   // Overlay state
   const [showOverlay, setShowOverlay] = useState(false);
   const [overlayData, setOverlayData] = useState(null);
@@ -114,7 +116,7 @@ const StarTunnelCanvas = () => {
       }
 
       // Update progress bar
-      const maxScrollToShow = -2000;
+      const maxScrollToShow = -2190;
       const progress = Math.min(
         100,
         (currentScroll.current / maxScrollToShow) * 100
@@ -155,13 +157,19 @@ const StarTunnelCanvas = () => {
       currentRightIndex.current = Math.floor(-(currentScroll.current + 180) / 400) + 1;
       if (previousScroll + 20 < -currentScroll.current || previousScroll - 20 > -currentScroll.current) {
         const contentLeft = leftContents[Math.floor(-(currentScroll.current + 370) / 400) + 1];
-        
-        if (leftBoxRef.current && contentLeft) {
+      
+        if (leftBoxRef.current && contentLeft && currentScroll.current > -1960) {
           leftBoxRef.current.innerHTML = `
             <img alt="Icon" src=${contentLeft.img} style="display: block; margin: 0 auto 10px; border-radius: 8px; max-width: 100%;">
             <h3 className="nametitle" style="color: rgb(250, 255, 203);">${contentLeft.title}</h3>
             <p><i>${contentLeft.description}</i></p>
           `;
+          
+        }
+        else if(  currentScroll.current <= -1960){
+            leftBoxRef.current.style.transform = "translate(-50%, -50%)";
+            leftBoxRef.current.style.left = "absolute";
+            console.log("aa")
         }
 
         const contentRight = rightContents[Math.floor(-(currentScroll.current + 180) / 400) + 1];
@@ -175,14 +183,44 @@ const StarTunnelCanvas = () => {
 
         previousScroll = -currentScroll.current;
       }
+      if (centerZoomRef.current && currentScroll.current < -2000) {
+      const centerDepth = (boxZ + currentScroll.current * 0.05) % maxDepth;
+      const adjustedCenterDepth = centerDepth < 0 ? centerDepth + maxDepth : centerDepth;
+      const centerScale = Math.min(25, 1 / (adjustedCenterDepth * 0.1 + 0.04));
 
-      // Update styles
-      if (leftBoxRef.current) {
+      const fadeStart = maxDepth * 1000;
+      const distanceBrightness =
+        adjustedCenterDepth > fadeStart
+          ? 1 - ((adjustedCenterDepth - fadeStart) / (maxDepth - fadeStart)) * 2
+          : 1;
+      const alpha = Math.min(1, centerScale * 1.2 * distanceBrightness);
+      if(centerBoxHover.current){
+        centerZoomRef.current.style.transform = `translate(-50%, -50%) scale(${centerScale * 1.1})`;
+        
+        
+      }
+      else{
+
+        centerZoomRef.current.style.transform = `translate(-50%, -50%) scale(${centerScale})`;
+      }
+      centerZoomRef.current.style.opacity = alpha;
+      centerZoomRef.current.style.pointerEvents = alpha > 0.2 ? "auto" : "none";
+      centerZoomRef.current.style.visibility = "visible";
+    }
+    else{
+      centerZoomRef.current.style.visibility = "hidden";
+    }
+          // Update styles
+      if (leftBoxRef.current && currentScroll.current > -1960) {
         leftBoxRef.current.style.transform = `translate(-50%, -50%) scale(${leftScale})`;
         leftBoxRef.current.style.left = `${boxLeftX}px`;
         leftBoxRef.current.style.top = `${boxLeftYPos}px`;
         leftBoxRef.current.style.opacity = isLeftVisible ? 1 : 0;
         leftBoxRef.current.style.pointerEvents = isLeftVisible ? "auto" : "none";
+        leftBoxRef.current.style.visibility = "visible";
+      }
+      else{
+        leftBoxRef.current.style.visibility = "hidden";
       }
       if (rightBoxRef.current) {
         rightBoxRef.current.style.transform = `translate(-50%, -50%) scale(${rightScale})`;
@@ -208,7 +246,7 @@ const StarTunnelCanvas = () => {
     let dragVelocity = 0;
     let lastTouchTime = 0;
     const container = containerRef.current;
-    const maxScrollLimit = -2000;
+    const maxScrollLimit = -2190;
 
     const handleWheel = (e) => {    
       if(isFocused.current === false){
@@ -301,8 +339,49 @@ const StarTunnelCanvas = () => {
         }}
         ref={progressBarRef}
       />
-
-      {/* Left Exhibition Box */}
+      <div
+        ref={centerZoomRef}
+        
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "300px",
+          height: "100px",
+          backgroundColor: "rgba(255, 0, 0, 0.2)",
+          borderRadius: "12px",
+          color: "#fff",
+          fontSize: "28px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          textAlign: "center",
+          opacity: 0,
+          pointerEvents: "none",
+          transition: "opacity 0.2s ease",
+          visibility: "hidden",
+          zIndex: 1000,
+        }}
+        onMouseEnter={(e) => {
+          centerBoxHover.current = true;
+             centerZoomRef.current.style.transition = 'transform 0.15s ease, opacity 0.2s ease'
+             centerZoomRef.current.style.boxShadow = "0 0 25px rgb(170, 0, 0)";
+            }}
+        onMouseLeave={(e) => {
+          centerBoxHover.current = false;
+          setTimeout(() => {
+            centerZoomRef.current.style.transition = 'opacity 0.2s ease'
+          }, 400); 
+          centerZoomRef.current.style.boxShadow = "";
+            }}
+          
+        onClick={(e) => {
+          
+        }}
+      >
+        Back to main page
+      </div>s
       <div
         ref={leftBoxRef}
         style={{
@@ -318,10 +397,20 @@ const StarTunnelCanvas = () => {
           pointerEvents: "auto",
           opacity: 0,
           fontFamily: "sans-serif",
-          boxShadow: "0 0 10px rgb(216, 176, 0)",
+          
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
+        onMouseEnter={(e) => {
+          if (leftBoxRef.current) {
+          leftBoxRef.current.style.boxShadow = "0 0 20px rgb(216, 176, 0)";
+          }
+            }}
+        onMouseLeave={(e) => {
+          if (leftBoxRef.current) {
+          leftBoxRef.current.style.boxShadow = "0 0 10px rgb(99, 81, 0)";
+          }
+            }}
         onClick={() => {
           const content = leftContents[currentLeftIndex.current];
           if (content) {
@@ -358,15 +447,26 @@ const StarTunnelCanvas = () => {
           width: "200px",
           padding: "15px",
           backgroundColor: "rgba(40, 40, 40, 0.9)",
+          
           color: "white",
           borderRadius: "10px",
           pointerEvents: "auto",
           opacity: 0,
           fontFamily: "sans-serif",
-          boxShadow: "0 0 10px rgb(216, 176, 0)",
+          
           zIndex: 1001,
           transition: "opacity 0.2s ease",
         }}
+        onMouseEnter={(e) => {
+          if (rightBoxRef.current) {
+            rightBoxRef.current.style.boxShadow = "0 0 20px rgb(216, 176, 0)";
+          }
+            }}
+        onMouseLeave={(e) => {
+          if (rightBoxRef.current) {
+          rightBoxRef.current.style.boxShadow = "0 0 10px rgb(99, 81, 0)";
+          }
+            }}
         onClick={() => {
           const rcontent = rightContents[currentRightIndex.current];
           if (rcontent) {
