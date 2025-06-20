@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 const BackPage = ({ }) => {
+const navigate = useNavigate();
+  const redirect = () => {
+    navigate('/'); // go to the new route
+    setTimeout(() => {
+      window.location.reload(); // force reload after routing
+    }, 2); // slight delay to allow route to change
+  };
   return (
         <>
     <meta charSet="utf-8" />
@@ -67,6 +74,7 @@ const BackPage = ({ }) => {
                         
                         className="btn btn-primary py-2 px-3 animated slideInDown"
                         href=""
+                        onClick={() => redirect()}
                     >
                         Take Me Home Instead
                         <div className="d-inline-flex btn-sm-square bg-white text-primary rounded-circle ms-2">
