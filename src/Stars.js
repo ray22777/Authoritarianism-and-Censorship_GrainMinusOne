@@ -1,8 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { leftContents } from "./content";
 import { rightContents } from "./content";
+import { useNavigate } from "react-router-dom";
 import onExplore from "./App"
-const StarTunnelCanvas = () => {
+const StarTunnelCanvas = ({}) => {
+  const navigate = useNavigate();
+  const redirect = () => {
+    navigate('/conclusion'); // go to the new route
+    setTimeout(() => {
+      window.location.reload(); // force reload after routing
+    }, 2); // slight delay to allow route to change
+  };
+
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const progressBarRef = useRef(null);
@@ -169,7 +178,6 @@ const StarTunnelCanvas = () => {
         else if(  currentScroll.current <= -1960){
             leftBoxRef.current.style.transform = "translate(-50%, -50%)";
             leftBoxRef.current.style.left = "absolute";
-            console.log("aa")
         }
 
         const contentRight = rightContents[Math.floor(-(currentScroll.current + 180) / 400) + 1];
@@ -203,12 +211,17 @@ const StarTunnelCanvas = () => {
 
         centerZoomRef.current.style.transform = `translate(-50%, -50%) scale(${centerScale})`;
       }
-      centerZoomRef.current.style.opacity = alpha;
-      centerZoomRef.current.style.pointerEvents = alpha > 0.2 ? "auto" : "none";
-      centerZoomRef.current.style.visibility = "visible";
+      if(centerZoomRef.current){
+        centerZoomRef.current.style.opacity = alpha;
+        centerZoomRef.current.style.pointerEvents = alpha > 0.2 ? "auto" : "none";
+        centerZoomRef.current.style.visibility = "visible";
+      }
     }
     else{
-      centerZoomRef.current.style.visibility = "hidden";
+      if(centerZoomRef.current){
+        centerZoomRef.current.style.visibility = "hidden";
+      }
+      
     }
           // Update styles
       if (leftBoxRef.current && currentScroll.current > -1960) {
@@ -220,7 +233,9 @@ const StarTunnelCanvas = () => {
         leftBoxRef.current.style.visibility = "visible";
       }
       else{
-        leftBoxRef.current.style.visibility = "hidden";
+        if(leftBoxRef.current){
+          leftBoxRef.current.style.visibility = "hidden";
+        }
       }
       if (rightBoxRef.current) {
         rightBoxRef.current.style.transform = `translate(-50%, -50%) scale(${rightScale})`;
@@ -376,9 +391,7 @@ const StarTunnelCanvas = () => {
           centerZoomRef.current.style.boxShadow = "";
             }}
           
-        onClick={(e) => {
-          
-        }}
+        onClick={() => redirect()}
       >
         Back to main page
       </div>s

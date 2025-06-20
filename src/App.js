@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import StarTunnelCanvas from "./Stars";
 import MainPage from "./MainPage";
-
-
+import BackPage from "./BackPage";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 const App = () => {
-  const [showTunnel, setShowTunnel] = useState(false);
   return (
-    <div>
-      
-      {showTunnel ? (
-        <StarTunnelCanvas />
-      ) : (
-        <MainPage onExplore={() => setShowTunnel(true)} />
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/conclusion" element={<BackPage />} />
+        <Route path="/leaders" element={<StarTunnelCanvas />} />
+      </Routes>
+    </BrowserRouter>
   );
 };
 

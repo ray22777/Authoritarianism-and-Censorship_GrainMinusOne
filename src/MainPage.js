@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-
-const MainPage = ({ onExplore }) => {
+const MainPage = ({}) => {
+const navigate = useNavigate();
   return (
         <>
     <meta charSet="utf-8" />
@@ -63,16 +64,7 @@ const MainPage = ({ onExplore }) => {
                     <p className="fs-5 text-white-50 mb-5 animated slideInDown">
                         It has happened before, and it is happening again. Don't ignore it.
                     </p>
-                    <btn
-                        onClick={onExplore}
-                        className="btn btn-primary py-2 px-3 animated slideInDown"
-                        href=""
-                    >
-                        Tell Me More
-                        <div className="d-inline-flex btn-sm-square bg-white text-primary rounded-circle ms-2">
-                        <i className="fa fa-arrow-right" />
-                        </div>
-                    </btn>
+
                     </div>
                 </div>
                 </div>
@@ -116,12 +108,16 @@ const MainPage = ({ onExplore }) => {
                 <p className="mb-5">
                 Authoritarian autocrats consolidate more power for themselves whilst leaving the people powerless to stand out against them. Shockingly, there are a lot of similar tactics used by historically famous and present dictators.
                 </p>
-                <a className="btn btn-primary py-2 px-3 me-3" href="">
-                Tell Me More
-                <div className="d-inline-flex btn-sm-square bg-white text-primary rounded-circle ms-2">
+                <btn
+                    onClick={() => navigate("/leaders")}
+                    className="btn btn-primary py-2 px-3 animated slideInDown"
+                    href=""
+                >
+                    Tell Me More
+                    <div className="d-inline-flex btn-sm-square bg-white text-primary rounded-circle ms-2">
                     <i className="fa fa-arrow-right" />
-                </div>
-                </a>
+                    </div>
+                </btn>
             </div>
             </div>
         </div>
