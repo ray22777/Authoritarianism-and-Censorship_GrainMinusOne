@@ -364,11 +364,12 @@ const StarTunnelCanvas = ({}) => {
           transform: "translate(-50%, -50%)",
           width: "300px",
           height: "100px",
-          backgroundColor: "rgba(30, 179, 0, 0.25)",
-          borderRadius: "12px",
-          color: "#fff",
-          cursor: 'pointer',
-          fontSize: "28px",
+          backgroundColor: "rgba(255, 72, 0, 0.86)",
+          borderRadius: "16px",
+          color: "#222",
+          cursor: "pointer",
+          fontSize: "26px",
+          fontWeight: "bold",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -377,12 +378,14 @@ const StarTunnelCanvas = ({}) => {
           pointerEvents: "none",
           transition: "opacity 0.2s ease",
           visibility: "hidden",
+          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
           zIndex: 1000,
+          padding: "0 20px",
         }}
         onMouseEnter={(e) => {
           centerBoxHover.current = true;
              centerZoomRef.current.style.transition = 'transform 0.15s ease, opacity 0.2s ease'
-             centerZoomRef.current.style.boxShadow = "0 0 25px rgba(43, 255, 0, 0.51)";
+             centerZoomRef.current.style.boxShadow = "0 0 25px rgba(255, 175, 1, 0.6)";
             }}
         onMouseLeave={(e) => {
           centerBoxHover.current = false;
@@ -394,7 +397,7 @@ const StarTunnelCanvas = ({}) => {
           
         onClick={() => redirect()}
       >
-        Continue
+        <b>What can we do?</b>
       </div>
       
       <div
