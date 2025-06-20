@@ -364,9 +364,10 @@ const StarTunnelCanvas = ({}) => {
           transform: "translate(-50%, -50%)",
           width: "300px",
           height: "100px",
-          backgroundColor: "rgba(255, 0, 0, 0.2)",
+          backgroundColor: "rgba(30, 179, 0, 0.25)",
           borderRadius: "12px",
           color: "#fff",
+          cursor: 'pointer',
           fontSize: "28px",
           display: "flex",
           alignItems: "center",
@@ -381,7 +382,7 @@ const StarTunnelCanvas = ({}) => {
         onMouseEnter={(e) => {
           centerBoxHover.current = true;
              centerZoomRef.current.style.transition = 'transform 0.15s ease, opacity 0.2s ease'
-             centerZoomRef.current.style.boxShadow = "0 0 25px rgb(170, 0, 0)";
+             centerZoomRef.current.style.boxShadow = "0 0 25px rgba(43, 255, 0, 0.51)";
             }}
         onMouseLeave={(e) => {
           centerBoxHover.current = false;
@@ -393,8 +394,9 @@ const StarTunnelCanvas = ({}) => {
           
         onClick={() => redirect()}
       >
-        Back to main page
-      </div>s
+        Continue
+      </div>
+      
       <div
         ref={leftBoxRef}
         style={{
@@ -403,6 +405,7 @@ const StarTunnelCanvas = ({}) => {
           left: "50%",
           transformOrigin: "center center",
           width: "200px",
+          cursor: 'pointer',
           padding: "15px",
           backgroundColor: "rgba(40, 40, 40, 0.9)",
           color: "white",
@@ -460,7 +463,7 @@ const StarTunnelCanvas = ({}) => {
           width: "200px",
           padding: "15px",
           backgroundColor: "rgba(40, 40, 40, 0.9)",
-          
+          cursor: 'pointer',
           color: "white",
           borderRadius: "10px",
           pointerEvents: "auto",
