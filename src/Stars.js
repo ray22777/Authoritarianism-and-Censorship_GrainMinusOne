@@ -385,7 +385,7 @@ const StarTunnelCanvas = ({}) => {
         onMouseEnter={(e) => {
           centerBoxHover.current = true;
              centerZoomRef.current.style.transition = 'transform 0.15s ease, opacity 0.2s ease'
-             centerZoomRef.current.style.boxShadow = "0 0 25px rgba(255, 175, 1, 0.6)";
+             centerZoomRef.current.style.boxShadow = "0 0 25px rgba(255, 73, 1, 0.6)";
             }}
         onMouseLeave={(e) => {
           centerBoxHover.current = false;
