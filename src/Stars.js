@@ -3,14 +3,32 @@ import { leftContents } from "./content";
 import { rightContents } from "./content";
 import { useNavigate } from "react-router-dom";
 import onExplore from "./App"
+
 const StarTunnelCanvas = ({}) => {
+  const fullscreened = useRef(false);
   const navigate = useNavigate();
-  const redirect = () => {
-    navigate('/conclusion');
-    setTimeout(() => {
-      window.location.reload(); 
-    }, 2); 
+  const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(true);
+
+  const requestFullscreen = async () => {
+    const el = document.documentElement;
+    try {
+      if (el.requestFullscreen) await el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+      else if (el.msRequestFullscreen) await el.msRequestFullscreen();
+    } catch (e) {
+      console.error("Fullscreen request failed", e);
+    } finally {
+      setShowFullscreenPrompt(false);
+      fullscreened.current = true;
+    }
   };
+    const redirect = () => {
+      navigate('/conclusion');
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 2); 
+    };
+
 const styles = {
     colors: {
       primary: 'rgba(30, 30, 40, 0.95)',
@@ -18,7 +36,7 @@ const styles = {
       accent: 'rgba(255, 100, 60, 0.9)',
       accentHover: 'rgba(255, 120, 80, 0.95)',
       starTint: 'rgba(200, 220, 255, 0.8)',
-      background: 'rgb(0, 0, 8)',
+      background: 'rgb(0, 0, 6)',
       boxHighlight: 'rgba(255, 215, 0, 0.3)',
       progressStart: 'rgba(0, 219, 0, 0.74)',
       progressEnd: 'rgba(0, 160, 80, 0.74)',
@@ -58,6 +76,7 @@ const styles = {
   const currentLeftIndex = useRef(0);
   const currentRightIndex = useRef(0);
   const centerBoxHover = useRef(false);
+
   const leftBoxHover = useRef(false);
   const rightBoxHover = useRef(false);
   const [showOverlay, setShowOverlay] = useState(false);
@@ -102,12 +121,6 @@ const styles = {
     let fpsCounter = 0;
     let fpsLast = performance.now();
     const draw = (time) => {
-      fpsCounter++;
-      if (time - fpsLast >= 1000) {
-        console.log("FPS:", fpsCounter);
-        fpsCounter = 0;
-        fpsLast = time;
-      }
       requestAnimationFrame(draw);
       const deltaTime = time - lastTime.current;
       lastTime.current = time;
@@ -311,7 +324,7 @@ const styles = {
     const maxScrollLimit = -2190;
 
     const handleWheel = (e) => {    
-      if(isFocused.current === false){
+      if(isFocused.current === false && fullscreened.current){
         const proposedScroll = targetScroll.current + e.deltaY * scrollSpeed * 0.5 * (e.deltaMode ? 40 : 1);
         if (proposedScroll > 0 || proposedScroll < maxScrollLimit) return;
         targetScroll.current = proposedScroll;
@@ -391,7 +404,38 @@ const styles = {
         willChange: "transform", // hint to browser that it will animate
       }}
    />
-
+{showFullscreenPrompt && (
+  <div
+    onClick={requestFullscreen}
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      zIndex: 99999,
+      backdropFilter: "blur(18px)",
+      backgroundColor: "rgba(0, 0, 0, 0.6)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "column",
+      color: "white",
+      textAlign: "center",
+      fontFamily: "sans-serif",
+      padding: "30px",
+      cursor: "pointer",
+      userSelect: "none",
+    }}
+  >
+    <h2 style={{ fontSize: "2rem", marginBottom: "16px", color: "rgb(153, 153, 153)" }}>
+      This experience is best viewed in fullscreen
+    </h2>
+    <p style={{ fontSize: "1.5rem", maxWidth: "500px" , color: "rgb(117, 117, 117)" }}>
+       Click to continue
+    </p>
+  </div>
+)}
       {/* Scroll Progress Bar */}
       <div
         style={{
