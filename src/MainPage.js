@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const MainPage = ({}) => {
 const navigate = useNavigate();
+
   return (
         <>
     <meta charSet="utf-8" />
